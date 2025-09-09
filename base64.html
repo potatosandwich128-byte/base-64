@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <title>b64 shenanigans</title>
+    </head>
+    <body>
+        <textarea id="textarea1" placeholder="put text here"></textarea>
+        <button onclick="encode()">encode</button>
+        <textarea disabled id="result1"></textarea>
+
+        <textarea id="textarea2" placeholder="put text here"></textarea>
+        <button onclick="decode()">decode</button>
+        <textarea disabled id="result2"></textarea>
+        <script>
+
+
+            function encode(){
+                console.clear();
+                var e = document.getElementById("textarea1").value;
+                console.log(e);
+                var bin = "";
+                for (let i = 0; i < e.length; i++){
+                    console.log(e.charCodeAt(i).toString(2));
+                    console.log(e.charCodeAt(i).toString());
+                    bin += e.charCodeAt(i).toString(2).padStart(8, "0");
+                }
+                console.log(bin);
+                var chunks = bin.match(/.{1,6}/g);
+                console.log(chunks);
+                chunks[chunks.length - 1] = chunks[chunks.length - 1].padEnd(6, "0");
+                console.log(chunks);
+                var numchunks = chunks.map(elem => elem = parseInt(elem, 2));
+                console.log(numchunks);
+                var b64charsS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+                var b64char = b64charsS.split("");
+                console.log(b64char);
+                var result = numchunks.map(n => n = b64char[n]).join("");
+                console.log(result);
+                switch(result.length % 4){
+                    case 2: result += "==";
+                    break;
+                    case 3: result += "=";
+                    break;
+                }
+                console.log(result);
+                document.getElementById("result1").innerHTML = result
+            }
+            function decode(){
+                    console.clear();
+                    var e = document.getElementById("textarea2").value;
+                    e = e.replace(/=/g, ""); // remove all padding
+                    var b64charsS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+                    var eNum = e.split("").map(c => b64charsS.indexOf(c));
+                    var eBin = eNum.map(n => n.toString(2).padStart(6, "0"));
+                    var eBinS = eBin.join("");
+                    var eBin8 = eBinS.match(/.{1,8}/g).filter(b => b.length === 8);
+                    var eDec = eBin8.map(b => parseInt(b, 2));
+                    var eChar = eDec.map(n => String.fromCharCode(n));
+                    var result = eChar.join("");
+                    console.log(result);
+                    document.getElementById("result2").innerHTML = result;
+            }
+        </script>
+    </body>
+</html>
